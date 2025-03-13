@@ -33,8 +33,8 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
   const handleSave = async () => {
     if (!apiKey.trim()) {
       toast({
-        title: "API Key Required",
-        description: "Please enter a valid API key",
+        title: "Требуется API Ключ",
+        description: "Пожалуйста, введите действительный API ключ",
         variant: "destructive",
       });
       return;
@@ -47,15 +47,15 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
       });
       
       toast({
-        title: "API Key Saved",
-        description: `Your ${providers.find(p => p.id === selectedProvider)?.name} API key has been saved.`
+        title: "API Ключ Сохранен",
+        description: `Ваш ${providers.find(p => p.id === selectedProvider)?.name} API ключ был сохранен.`
       });
       
       onClose();
     } catch (error) {
       toast({
-        title: "Error Saving API Key",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        title: "Ошибка Сохранения API Ключа",
+        description: error instanceof Error ? error.message : "Произошла непредвиденная ошибка",
         variant: "destructive",
       });
     }
@@ -144,7 +144,7 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
               disabled={isLoading}
               className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90"
             >
-              Save Key
+              Сохранить Ключ
             </Button>
           </div>
         </DialogFooter>
