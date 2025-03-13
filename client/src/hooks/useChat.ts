@@ -46,15 +46,33 @@ export function useChat({ provider, onCodeReceived }: UseChatOptions) {
       
       const data = await response.json();
       
-      // Extract text from Gemini response format
+      // Extract text from AI provider response format
       let responseText = '';
       
       if (provider.id === 'gemini' && data.candidates) {
-        responseText = data.candidates[0]?.content?.parts[0]?.text || "Sorry, I couldn't generate a response.";
+        // Improved Gemini response handling
+        const candidate = data.candidates[0];
+        if (candidate?.content?.parts) {
+          // Collect all text parts from the response
+          responseText = candidate.content.parts
+            .map((part: any) => part.text || '')
+            .join('\n');
+        } else {
+          console.warn('Unexpected Gemini response format:', data);
+          responseText = "Sorry, I couldn't understand the AI's response format.";
+        }
+      } else if (provider.id === 'gemini' && data.error) {
+        // Handle error in Gemini response
+        console.error('Gemini API error:', data.error);
+        const errorMessage = data.error.message || data.details || JSON.stringify(data.error);
+        throw new Error(`Gemini API Error: ${errorMessage}`);
       } else {
         // Handle other providers' response formats
         responseText = data.message || JSON.stringify(data);
       }
+      
+      // Debug output
+      console.log('Processed AI response:', { provider: provider.id, success: true, responseLength: responseText.length });
       
       // Look for code blocks in the response
       const codeBlockRegex = /```(?:jsx?|tsx?|html)?\n([\s\S]*?)\n```/g;
@@ -62,16 +80,22 @@ export function useChat({ provider, onCodeReceived }: UseChatOptions) {
       
       if (codeBlocks.length > 0 && onCodeReceived) {
         // If there are code blocks, send the first one to the code editor
-        onCodeReceived(codeBlocks[0][1]);
+        const codeContent = codeBlocks[0][1].trim();
+        console.log('Found code block, length:', codeContent.length);
+        onCodeReceived(codeContent);
       }
       
       // Add assistant message
       addMessage({ role: 'assistant', content: responseText });
     } catch (error) {
       console.error('Error sending message:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Unknown error occurred';
+        
       addMessage({ 
         role: 'assistant', 
-        content: 'Sorry, there was an error processing your request. Please check your API key and try again.'
+        content: `Sorry, there was an error processing your request: ${errorMessage}. Please check your API key and try again.`
       });
     } finally {
       setIsLoading(false);

@@ -81,23 +81,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // The actual model name to use with Gemini API
       const modelName = model || "gemini-2.0-pro-exp-02-05";
       
-      // Call Gemini API
-      const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
-        {
-          contents: [{ parts: [{ text: prompt }] }]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            key: apiKey.apiKey
-          }
-        }
-      );
+      console.log(`Calling Gemini API with model: ${modelName}`);
       
-      res.json(response.data);
+      // Call Gemini API
+      try {
+        const response = await axios.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
+          {
+            contents: [{ 
+              role: "user",
+              parts: [{ text: prompt }] 
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 8192,
+            }
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              key: apiKey.apiKey
+            }
+          }
+        );
+        
+        console.log("Gemini API response status:", response.status);
+        res.json(response.data);
+      } catch (apiError: any) {
+        console.error("Gemini API request failed:", apiError.message);
+        if (apiError.response) {
+          console.error("Response data:", apiError.response.data);
+          console.error("Response status:", apiError.response.status);
+          
+          // Return the error from Gemini API to the client
+          return res.status(apiError.response.status).json({
+            message: "Gemini API Error",
+            error: apiError.response.data,
+            details: apiError.response.data.error || "Unknown API error"
+          });
+        }
+        
+        throw apiError;
+      }
     } catch (error) {
       console.error("Gemini API error:", error);
       res.status(500).json({ 
