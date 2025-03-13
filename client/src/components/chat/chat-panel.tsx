@@ -91,8 +91,8 @@ export function ChatPanel({ onCodeUpdate, providerConfig, setProviderConfig }: C
     } catch (error) {
       setIsTyping(false);
       toast({
-        title: "Error",
-        description: "Failed to get a response from the AI provider. Please check your API key.",
+        title: "Ошибка",
+        description: "Не удалось получить ответ от провайдера ИИ. Пожалуйста, проверьте ваш API ключ.",
         variant: "destructive",
       });
     }

@@ -10,7 +10,7 @@ export function ChatMessage({ role, content, provider = "GEMINI" }: ChatMessageP
   if (role === "system") {
     return (
       <div className="mb-4 p-3 rounded-lg bg-opacity-30 bg-blue-900 border border-purple-600">
-        <p className="text-xs text-gray-400">SYSTEM</p>
+        <p className="text-xs text-gray-400">СИСТЕМА</p>
         <p className="text-sm text-gray-300">{content}</p>
       </div>
     );
@@ -20,7 +20,7 @@ export function ChatMessage({ role, content, provider = "GEMINI" }: ChatMessageP
     return (
       <div className="mb-4 flex justify-end">
         <div className="max-w-[80%] p-3 rounded-lg bg-opacity-50 bg-purple-900">
-          <p className="text-xs text-gray-400 mb-1">YOU</p>
+          <p className="text-xs text-gray-400 mb-1">ВЫ</p>
           <p className="text-sm text-white">{content}</p>
         </div>
       </div>

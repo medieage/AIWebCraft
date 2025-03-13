@@ -37,23 +37,23 @@ export function ProviderSettings({ open, onOpenChange, providerConfig, setProvid
              style={{ borderImage: "linear-gradient(135deg, #00b3ff, #9f00ff) 1" }} />
         
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">AI Provider Settings</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-white">Настройки ИИ Провайдера</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Configure your AI provider settings to generate website code
+            Настройте параметры ИИ провайдера для генерации кода веб-сайта
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div>
             <Label htmlFor="provider" className="block text-sm font-medium text-gray-300 mb-1">
-              Select AI Provider
+              Выберите ИИ Провайдера
             </Label>
             <Select 
               value={formState.provider} 
               onValueChange={handleProviderChange}
             >
               <SelectTrigger className="w-full glassmorphism text-white py-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
-                <SelectValue placeholder="Select AI Provider" />
+                <SelectValue placeholder="Выберите ИИ Провайдера" />
               </SelectTrigger>
               <SelectContent className="bg-gray-900 border border-gray-700">
                 {supportedProviders.map(provider => (
@@ -67,12 +67,12 @@ export function ProviderSettings({ open, onOpenChange, providerConfig, setProvid
 
           <div>
             <Label htmlFor="apiKey" className="block text-sm font-medium text-gray-300 mb-1">
-              {formState.provider} API Key
+              API Ключ для {formState.provider}
             </Label>
             <Input
               id="apiKey"
               type="password"
-              placeholder={`Enter your ${formState.provider} API key`}
+              placeholder={`Введите ваш API ключ ${formState.provider}`}
               value={formState.apiKey}
               onChange={(e) => setFormState({ ...formState, apiKey: e.target.value })}
               className="w-full glassmorphism text-white py-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -82,14 +82,14 @@ export function ProviderSettings({ open, onOpenChange, providerConfig, setProvid
           {defaultModels[formState.provider]?.length > 0 && (
             <div>
               <Label htmlFor="model" className="block text-sm font-medium text-gray-300 mb-1">
-                {formState.provider} Model
+                Модель {formState.provider}
               </Label>
               <Select 
                 value={formState.model || defaultModels[formState.provider][0]} 
                 onValueChange={(model) => setFormState({ ...formState, model })}
               >
                 <SelectTrigger className="w-full glassmorphism text-white py-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
-                  <SelectValue placeholder="Select Model" />
+                  <SelectValue placeholder="Выберите модель" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-900 border border-gray-700">
                   {defaultModels[formState.provider].map((model) => (
@@ -107,7 +107,7 @@ export function ProviderSettings({ open, onOpenChange, providerConfig, setProvid
               type="submit"
               className="px-4 py-2 bg-gradient-to-r from-blue-400 to-purple-600 text-white rounded-md font-medium hover:opacity-90 transition-opacity"
             >
-              Save Settings
+              Сохранить настройки
             </Button>
           </div>
         </form>

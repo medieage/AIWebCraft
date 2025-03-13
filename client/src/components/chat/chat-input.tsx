@@ -23,7 +23,7 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Ask anything about your website..."
+        placeholder="Опишите, какой сайт вы хотите создать..."
         className="flex-1 bg-gray-900 bg-opacity-50 text-white px-4 py-2 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-400"
       />
       <Button 
