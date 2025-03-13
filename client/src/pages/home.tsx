@@ -60,7 +60,7 @@ export default function Home() {
               >
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
               </svg>
-              API Keys
+              API Ключи
             </Button>
             
             <ProviderDropdown 
@@ -86,7 +86,7 @@ export default function Home() {
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                 <line x1="9" y1="3" x2="9" y2="21" />
               </svg>
-              Templates
+              Шаблоны
             </Button>
           </div>
         </div>

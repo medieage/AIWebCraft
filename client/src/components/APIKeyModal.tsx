@@ -70,18 +70,18 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="backdrop-blur-lg bg-background/95 border border-border/50 shadow-[0_0_30px_rgba(139,92,246,0.25)] sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-lg">API Key Management</DialogTitle>
+          <DialogTitle className="text-lg">Управление API Ключами</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-5 py-4">
           <div className="space-y-1">
-            <Label htmlFor="provider">Select Provider</Label>
+            <Label htmlFor="provider">Выберите Провайдера</Label>
             <Select 
               value={selectedProvider} 
               onValueChange={setSelectedProvider}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Provider" />
+                <SelectValue placeholder="Выберите Провайдера" />
               </SelectTrigger>
               <SelectContent>
                 {providers.map(provider => (
@@ -94,12 +94,12 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
           </div>
           
           <div className="space-y-1">
-            <Label htmlFor="apiKey">API Key</Label>
+            <Label htmlFor="apiKey">API Ключ</Label>
             <div className="relative">
               <Input
                 id="apiKey"
                 type={showKey ? "text" : "password"}
-                placeholder={`Enter your ${providers.find(p => p.id === selectedProvider)?.name} API key`}
+                placeholder={`Введите ваш ${providers.find(p => p.id === selectedProvider)?.name} API ключ`}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className="pr-10"
@@ -115,7 +115,7 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Your key is stored locally and never sent to our servers.
+              Ваш ключ хранится локально и никогда не отправляется на наши серверы.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
           >
             <a href={getProviderHelpLink()} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-3 w-3 mr-1" />
-              Where to find my key?
+              Где найти мой ключ?
             </a>
           </Button>
           
@@ -137,7 +137,7 @@ export default function APIKeyModal({ isOpen, onClose, providers }: APIKeyModalP
               variant="outline" 
               onClick={onClose}
             >
-              Cancel
+              Отмена
             </Button>
             <Button 
               onClick={handleSave}
