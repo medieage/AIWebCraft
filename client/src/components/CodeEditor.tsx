@@ -41,13 +41,13 @@ export default function CodeEditor({
     try {
       // This would run the code in a sandbox or update the preview
       toast({
-        title: "Running code",
-        description: "Your code is being executed in the preview panel.",
+        title: "Запуск кода",
+        description: "Ваш код выполняется в панели предпросмотра.",
       });
     } catch (error) {
       toast({
-        title: "Error running code",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        title: "Ошибка выполнения кода",
+        description: error instanceof Error ? error.message : "Произошла неизвестная ошибка",
         variant: "destructive",
       });
     }
@@ -57,16 +57,16 @@ export default function CodeEditor({
     if (code) {
       navigator.clipboard.writeText(code);
       toast({
-        title: "Copied to clipboard",
-        description: "The code has been copied to your clipboard.",
+        title: "Скопировано в буфер обмена",
+        description: "Код был скопирован в буфер обмена.",
       });
     }
   };
   
   const handleAddFile = () => {
-    const fileName = prompt("Enter file name:", "NewComponent.jsx");
+    const fileName = prompt("Введите имя файла:", "NewComponent.jsx");
     if (fileName) {
-      addFile(fileName, "// Your code here");
+      addFile(fileName, "// Ваш код здесь");
       setActiveFile(fileName);
     }
   };
@@ -76,7 +76,7 @@ export default function CodeEditor({
       <CardHeader className="border-b border-border/40 px-4 py-3 space-y-0 flex flex-row justify-between items-center">
         <div className="flex items-center gap-2">
           <Code2 className="h-5 w-5 text-blue-500" />
-          <CardTitle className="text-base font-medium">Code Editor</CardTitle>
+          <CardTitle className="text-base font-medium">Редактор кода</CardTitle>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -85,7 +85,7 @@ export default function CodeEditor({
             className="h-8 text-xs bg-blue-500/20 text-blue-500 border border-blue-500/40 hover:bg-blue-500/30"
           >
             <Play className="h-3 w-3 mr-1" />
-            Run
+            Запуск
           </Button>
           <Button 
             size="sm" 
@@ -97,7 +97,7 @@ export default function CodeEditor({
               }
             }}
           >
-            Format
+            Форматировать
           </Button>
           <Button 
             size="sm" 
@@ -106,7 +106,7 @@ export default function CodeEditor({
             onClick={handleCopyCode}
           >
             <Clipboard className="h-3 w-3 mr-1" />
-            Copy
+            Копировать
           </Button>
         </div>
       </CardHeader>

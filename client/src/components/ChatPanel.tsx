@@ -57,8 +57,8 @@ export default function ChatPanel({
       await sendMessage(userMessage);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Ошибка",
+        description: "Не удалось отправить сообщение. Пожалуйста, попробуйте снова.",
         variant: "destructive",
       });
     }

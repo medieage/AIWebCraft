@@ -30,7 +30,7 @@ export default function PreviewPanel({ html }: PreviewPanelProps) {
       <CardHeader className="border-b border-border/40 px-4 py-3 space-y-0 flex flex-row justify-between items-center">
         <div className="flex items-center gap-2">
           <Eye className="h-5 w-5 text-white" />
-          <CardTitle className="text-base font-medium">Preview</CardTitle>
+          <CardTitle className="text-base font-medium">Предпросмотр</CardTitle>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex border border-border rounded-md overflow-hidden">
@@ -65,12 +65,12 @@ export default function PreviewPanel({ html }: PreviewPanelProps) {
             onValueChange={(value: string) => setViewportSize(value as ViewportSize)}
           >
             <SelectTrigger className="h-7 w-[110px] text-xs bg-muted border-border">
-              <SelectValue placeholder="Viewport" />
+              <SelectValue placeholder="Размер экрана" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="desktop">Desktop</SelectItem>
-              <SelectItem value="tablet">Tablet</SelectItem>
-              <SelectItem value="mobile">Mobile</SelectItem>
+              <SelectItem value="desktop">Компьютер</SelectItem>
+              <SelectItem value="tablet">Планшет</SelectItem>
+              <SelectItem value="mobile">Телефон</SelectItem>
             </SelectContent>
           </Select>
           
@@ -106,7 +106,7 @@ export default function PreviewPanel({ html }: PreviewPanelProps) {
                     d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <p className="mt-2">Generate code to see preview</p>
+                <p className="mt-2">Сгенерируйте код, чтобы увидеть результат</p>
               </div>
             </div>
           )}
