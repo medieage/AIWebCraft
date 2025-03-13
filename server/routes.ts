@@ -85,14 +85,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Call Gemini API
       try {
-        // Create message array with system prompt and user message
+        // Create message array with system prompt as user message first, then the actual user message
+        // Gemini только поддерживает роли "user" и "model"
         const contents = [
           { 
-            role: MESSAGE_ROLE.SYSTEM, 
+            role: "user", 
             parts: [{ text: DEFAULT_SYSTEM_PROMPT }] 
           },
           { 
-            role: MESSAGE_ROLE.USER,
+            role: "user",
             parts: [{ text: prompt }] 
           }
         ];
