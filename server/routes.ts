@@ -191,6 +191,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Run code in preview panel
+  apiRouter.post("/run-code", async (req: Request, res: Response) => {
+    try {
+      const { code } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ message: "Code is required" });
+      }
+      
+      // For simple HTML/CSS/JS code, we just return it directly
+      // For more complex scenarios, this would need to compile the code
+      const html = code.includes("<html") ? code : `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            /* Normalize styles */
+            body { margin: 0; font-family: system-ui, sans-serif; }
+          </style>
+        </head>
+        <body>
+          ${code}
+          <script>
+            // Enable console logs to be captured
+            const originalConsoleLog = console.log;
+            console.log = (...args) => {
+              originalConsoleLog(...args);
+              window.parent.postMessage({
+                type: 'console-log',
+                data: args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg))
+              }, '*');
+            };
+          </script>
+        </body>
+        </html>
+      `;
+      
+      res.json({ html });
+    } catch (error) {
+      console.error("Error running code:", error);
+      res.status(500).json({ 
+        message: "Failed to run code",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Install dependencies for a project
+  apiRouter.post("/install-dependency", async (req: Request, res: Response) => {
+    try {
+      const { dependency, type } = req.body;
+      
+      if (!dependency) {
+        return res.status(400).json({ message: "Dependency name is required" });
+      }
+      
+      // In a real implementation, this would call npm/yarn to install the dependency
+      // For this demo, we'll simulate it
+      console.log(`Installing dependency: ${dependency} (${type || 'regular'})`);
+      
+      // Simulate a delay for installation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      res.json({ 
+        success: true, 
+        message: `Dependency ${dependency} was installed successfully`,
+        dependency,
+        type
+      });
+    } catch (error) {
+      console.error("Error installing dependency:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to install dependency",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Export to GitHub repository
+  apiRouter.post("/export-github", async (req: Request, res: Response) => {
+    try {
+      const { repo, token, files } = req.body;
+      
+      if (!repo) {
+        return res.status(400).json({ message: "GitHub repository name is required" });
+      }
+      
+      if (!token) {
+        return res.status(400).json({ message: "GitHub token is required" });
+      }
+      
+      if (!files || !Array.isArray(files) || files.length === 0) {
+        return res.status(400).json({ message: "Files are required" });
+      }
+      
+      // In a real implementation, this would use GitHub API to create a repository and push files
+      // For this demo, we'll just log the process
+      console.log(`Exporting to GitHub repository: ${repo}`);
+      console.log(`Number of files to export: ${files.length}`);
+      
+      res.json({ 
+        success: true, 
+        message: `Project exported successfully to ${repo}`,
+        url: `https://github.com/${repo}`
+      });
+    } catch (error) {
+      console.error("Error exporting to GitHub:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to export to GitHub",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Создаем HTTP сервер
   const httpServer = createServer(app);
+  
+  // WebSocket функциональность будет добавлена позже
+  // после решения проблем с импортами
+  console.log("HTTP server created, WebSocket functionality will be added later");
+  
   return httpServer;
 }

@@ -4,7 +4,6 @@ import CodeEditor from "./CodeEditor";
 import PreviewPanel from "./PreviewPanel";
 import { useCodeEditor } from "@/hooks/useCodeEditor";
 import { useChat } from "@/hooks/useChat";
-import { usePreview } from "@/hooks/usePreview";
 import { Provider } from "@/lib/providers";
 
 interface ThreePanelProps {
@@ -12,8 +11,8 @@ interface ThreePanelProps {
 }
 
 export default function ThreePanel({ provider }: ThreePanelProps) {
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [activeTabs, setActiveTabs] = useState([{ name: 'index.js', content: '' }]);
+  // Состояние для предпросмотра
+  const [previewHtml, setPreviewHtml] = useState<string>("");
   
   const { 
     code, 
@@ -32,9 +31,38 @@ export default function ThreePanel({ provider }: ThreePanelProps) {
     setSelectedModel,
     isLoading,
     models
-  } = useChat({ provider, onCodeReceived: updateCode });
+  } = useChat({ 
+    provider, 
+    onCodeReceived: (newCode) => {
+      updateCode(newCode);
+      
+      // При получении кода от ИИ, автоматически запускаем его в предпросмотре
+      // с небольшой задержкой, чтобы дать время на рендеринг
+      setTimeout(() => {
+        handlePreviewUpdate(
+          `<!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Предпросмотр</title>
+            <style>
+              body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; }
+            </style>
+          </head>
+          <body>
+            ${newCode}
+          </body>
+          </html>`
+        );
+      }, 500);
+    }
+  });
   
-  const { previewHtml } = usePreview({ code });
+  // Обработчик обновления предпросмотра
+  const handlePreviewUpdate = (html: string) => {
+    setPreviewHtml(html);
+  };
   
   return (
     <div className="grid lg:grid-cols-[1fr_1.5fr_1fr] gap-4 h-[calc(100vh-120px)]">
@@ -56,6 +84,7 @@ export default function ThreePanel({ provider }: ThreePanelProps) {
         setActiveFile={setActiveFile}
         files={files}
         addFile={addFile}
+        onPreviewUpdate={handlePreviewUpdate}
       />
       
       <PreviewPanel html={previewHtml} />
