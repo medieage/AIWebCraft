@@ -10,29 +10,18 @@ export const users = pgTable("users", {
 
 export const apiKeys = pgTable("api_keys", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  provider: text("provider").notNull(),
-  key: text("key").notNull(),
-  model: text("model"),
-  active: boolean("active").default(true),
+  userId: integer("user_id").references(() => users.id),
+  provider: text("provider").notNull(), // e.g., "gemini", "openai", etc.
+  apiKey: text("api_key").notNull(),
+  created: text("created").notNull()
 });
 
-export const chatMessages = pgTable("chat_messages", {
+export const templates = pgTable("templates", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  sessionId: text("session_id").notNull(),
-  role: text("role").notNull(),
-  content: text("content").notNull(),
-  timestamp: text("timestamp").notNull(),
-});
-
-export const generatedCode = pgTable("generated_code", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  sessionId: text("session_id").notNull(),
-  language: text("language").notNull(),
+  name: text("name").notNull(),
   code: text("code").notNull(),
-  timestamp: text("timestamp").notNull(),
+  thumbnail: text("thumbnail"),
+  tags: text("tags").array()
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -41,44 +30,20 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export const insertApiKeySchema = createInsertSchema(apiKeys).pick({
-  userId: true,
   provider: true,
-  key: true,
-  model: true,
+  apiKey: true,
 });
 
-export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
-  userId: true,
-  sessionId: true,
-  role: true,
-  content: true,
-  timestamp: true,
-});
-
-export const insertGeneratedCodeSchema = createInsertSchema(generatedCode).pick({
-  userId: true,
-  sessionId: true,
-  language: true,
+export const insertTemplateSchema = createInsertSchema(templates).pick({
+  name: true,
   code: true,
-  timestamp: true,
+  thumbnail: true,
+  tags: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type InsertGeneratedCode = z.infer<typeof insertGeneratedCodeSchema>;
-
 export type User = typeof users.$inferSelect;
 export type ApiKey = typeof apiKeys.$inferSelect;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type GeneratedCode = typeof generatedCode.$inferSelect;
-
-export type MessageRole = "system" | "user" | "assistant";
-
-export const providerSchema = z.object({
-  provider: z.string(),
-  apiKey: z.string(),
-  model: z.string().optional(),
-});
-
-export type ProviderConfig = z.infer<typeof providerSchema>;
+export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
+export type Template = typeof templates.$inferSelect;
+export type InsertTemplate = z.infer<typeof insertTemplateSchema>;

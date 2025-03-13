@@ -1,95 +1,108 @@
-import { useState, useEffect } from "react";
-import { ThreePanelLayout } from "@/components/layout/three-panel-layout";
-import { ChatPanel } from "@/components/chat/chat-panel";
-import { CodeEditor } from "@/components/ui/code-editor";
-import { PreviewPanel } from "@/components/preview/preview-panel";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { defaultProviderConfig } from "@/lib/provider-config";
+import { useState } from "react";
+import ThreePanel from "@/components/ThreePanel";
+import APIKeyModal from "@/components/APIKeyModal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import ProviderDropdown from "@/components/ProviderDropdown";
+import { providers } from "@/lib/providers";
+import { useApiKeys } from "@/hooks/useApiKeys";
 
 export default function Home() {
-  const [code, setCode] = useState<string>(`// Welcome to AI Website Generator!
-// Chat with the AI assistant to start generating a website.
-// The code will appear here and the preview will update in real-time.
-
-export default function Home() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
-      <div className="text-center text-white p-8 max-w-lg">
-        <h1 className="text-4xl font-bold mb-4">Welcome to AI Website Generator</h1>
-        <p className="text-xl mb-6">
-          Ask the AI to create a website for you, and watch it build in real-time!
-        </p>
-        <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-          <p className="text-sm">
-            Try asking: "Create a simple e-commerce landing page with a hero section, 
-            featured products grid, and a newsletter signup form."
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}`);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [activeProvider, setActiveProvider] = useState(providers[0]);
+  const { apiKeysQuery } = useApiKeys();
   
-  const [html, setHtml] = useState<string>("");
-  const [language, setLanguage] = useState<string>("javascript");
-  const [providerConfig, setProviderConfig] = useState(defaultProviderConfig);
-  const { toast } = useToast();
-
-  const runCodeMutation = useMutation({
-    mutationFn: async (codeToRun: string) => {
-      const response = await apiRequest("POST", "/api/run-code", { code: codeToRun });
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setHtml(data.html);
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to run the code. Please check for syntax errors.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Initial run to populate preview
-  useEffect(() => {
-    runCodeMutation.mutate(code);
-  }, []);
-
-  const handleCodeUpdate = (newCode: string) => {
-    setCode(newCode);
-  };
-
-  const handleRunCode = () => {
-    runCodeMutation.mutate(code);
-  };
-
   return (
-    <ThreePanelLayout
-      chatPanel={
-        <ChatPanel 
-          onCodeUpdate={handleCodeUpdate} 
-          providerConfig={providerConfig}
-          setProviderConfig={setProviderConfig}
-        />
-      }
-      codePanel={
-        <CodeEditor
-          code={code}
-          language={language}
-          onChange={handleCodeUpdate}
-          onRun={handleRunCode}
-        />
-      }
-      previewPanel={
-        <PreviewPanel 
-          html={html} 
-          isLoading={runCodeMutation.isPending}
-        />
-      }
-    />
+    <div className="min-h-screen flex flex-col bg-primary-bg text-foreground">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 max-w-screen-2xl items-center">
+          <div className="flex items-center gap-2 mr-4">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24"
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="text-white"
+              >
+                <path d="m9 19-5-5 5-5" />
+                <path d="m15 5 5 5-5 5" />
+              </svg>
+            </div>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+              AI Website Generator
+            </span>
+          </div>
+          
+          <div className="flex items-center ml-auto space-x-4">
+            <Button 
+              onClick={() => setIsKeyModalOpen(true)}
+              variant="outline"
+              className="border-purple-500 text-purple-500 hover:bg-purple-500/20"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="mr-1"
+              >
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+              </svg>
+              API Keys
+            </Button>
+            
+            <ProviderDropdown 
+              providers={providers}
+              activeProvider={activeProvider}
+              onChange={setActiveProvider}
+              apiKeysQuery={apiKeysQuery}
+            />
+            
+            <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="mr-1"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="9" y1="3" x2="9" y2="21" />
+              </svg>
+              Templates
+            </Button>
+          </div>
+        </div>
+      </header>
+      
+      {/* Main Content */}
+      <main className="flex-1 container pt-6 pb-8 max-w-screen-2xl">
+        <ThreePanel provider={activeProvider} />
+      </main>
+      
+      {/* API Key Modal */}
+      <APIKeyModal 
+        isOpen={isKeyModalOpen} 
+        onClose={() => setIsKeyModalOpen(false)} 
+        providers={providers}
+      />
+    </div>
   );
 }
