@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertApiKeySchema, DEFAULT_SYSTEM_PROMPT, MESSAGE_ROLE } from "@shared/schema";
 import { z } from "zod";
 import axios from "axios";
+import { WebSocketServer, WebSocket } from "ws";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes prefix
@@ -312,9 +313,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Создаем HTTP сервер
   const httpServer = createServer(app);
   
-  // WebSocket функциональность будет добавлена позже
-  // после решения проблем с импортами
-  console.log("HTTP server created, WebSocket functionality will be added later");
+  // Создаем WebSocket сервер на отдельном пути чтобы не мешать Vite HMR
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Хранение активных соединений
+  const clients: Set<WebSocket> = new Set();
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    clients.add(ws);
+    
+    ws.on('message', (message) => {
+      try {
+        // Получаем сообщение и отправляем его всем клиентам, кроме отправителя
+        const messageStr = message.toString();
+        console.log('WebSocket message received:', messageStr);
+        
+        // Рассылаем сообщение всем клиентам
+        clients.forEach(client => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(messageStr);
+          }
+        });
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      clients.delete(ws);
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      clients.delete(ws);
+    });
+  });
+  
+  console.log("HTTP and WebSocket servers created successfully");
   
   return httpServer;
 }

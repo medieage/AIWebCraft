@@ -173,6 +173,9 @@ export default function CodeEditor({
   // Ссылка на WebSocket для коллаборативного редактирования
   const wsRef = useRef<WebSocket | null>(null);
   
+  // Таймер для обновления предпросмотра
+  const previewUpdateTimeout = useRef<number | undefined>(undefined);
+  
   // Инициализация WebSocket
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -641,6 +644,19 @@ export default function CodeEditor({
       
       // Отправляем изменения через WebSocket
       broadcastChanges(currentTab, newValue);
+      
+      // Обновляем предпросмотр в реальном времени с небольшой задержкой
+      // для предотвращения слишком частого обновления при быстром вводе
+      if (previewUpdateTimeout.current) {
+        clearTimeout(previewUpdateTimeout.current);
+      }
+      previewUpdateTimeout.current = setTimeout(() => {
+        // Обновляем предпросмотр только для HTML, CSS и JS файлов
+        const ext = getFileExtension(currentTab);
+        if (['html', 'css', 'js', 'jsx'].includes(ext)) {
+          handleRunCode();
+        }
+      }, 1000); // 1 секунда задержки
     }
   };
   
