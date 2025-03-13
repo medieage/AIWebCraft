@@ -65,14 +65,14 @@ const getLanguageFromExtension = (ext: string): string => {
     swift: 'swift',
     rust: 'rust',
   };
-  
+
   return languageMap[ext] || 'javascript';
 };
 
 // Определяем иконку для типа файла
 const getFileIcon = (filename: string) => {
   const ext = getFileExtension(filename);
-  
+
   switch (ext) {
     case 'html':
       return <FileCode className="h-4 w-4 text-orange-400" />;
@@ -104,7 +104,7 @@ export default function CodeEditor({
 }: CodeEditorProps) {
   const { toast } = useToast();
   const editorRef = useRef<any>(null);
-  
+
   // Состояние для древовидной структуры файлов
   const [fileTree, setFileTree] = useState<FileNode[]>([
     {
@@ -157,37 +157,37 @@ export default function CodeEditor({
       ]
     }
   ]);
-  
+
   // Диалоговые окна
   const [showDependencyDialog, setShowDependencyDialog] = useState(false);
   const [dependencyName, setDependencyName] = useState('');
   const [dependencyType, setDependencyType] = useState('dependency');
-  
+
   const [showGitHubDialog, setShowGitHubDialog] = useState(false);
   const [gitHubRepo, setGitHubRepo] = useState('');
-  
+
   // Состояние для активной вкладки
   const [activeTabs, setActiveTabs] = useState<string[]>(['index.html']);
   const [currentTab, setCurrentTab] = useState('index.html');
-  
+
   // Ссылка на WebSocket для коллаборативного редактирования
   const wsRef = useRef<WebSocket | null>(null);
-  
+
   // Таймер для обновления предпросмотра
-  const previewUpdateTimeout = useRef<number | undefined>(undefined);
-  
+  const previewUpdateTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   // Инициализация WebSocket
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
+
     const socket = new WebSocket(wsUrl);
-    
+
     socket.onopen = () => {
       console.log("WebSocket connected");
       wsRef.current = socket;
     };
-    
+
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -199,17 +199,17 @@ export default function CodeEditor({
         console.error("Error processing WebSocket message:", error);
       }
     };
-    
+
     socket.onclose = () => {
       console.log("WebSocket disconnected");
       wsRef.current = null;
     };
-    
+
     return () => {
       socket.close();
     };
   }, []);
-  
+
   // Отправка изменений через WebSocket
   const broadcastChanges = (fileId: string, content: string) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -220,7 +220,7 @@ export default function CodeEditor({
       }));
     }
   };
-  
+
   // Функция для поиска файла в дереве
   const findFile = (nodes: FileNode[], id: string): FileNode | null => {
     for (const node of nodes) {
@@ -232,7 +232,7 @@ export default function CodeEditor({
     }
     return null;
   };
-  
+
   // Функция для обновления содержимого файла
   const updateFileContent = (fileId: string, content: string) => {
     setFileTree(prev => {
@@ -241,22 +241,22 @@ export default function CodeEditor({
           if (node.id === fileId) {
             return { ...node, content };
           }
-          
+
           if (node.children && node.children.length > 0) {
             return {
               ...node,
               children: updateNodeContent(node.children)
             };
           }
-          
+
           return node;
         });
       };
-      
+
       return updateNodeContent(prev);
     });
   };
-  
+
   // Обработчик события выбора файла
   const handleFileSelect = (fileId: string, fileName: string, language: string, content?: string) => {
     // Добавление или переключение на вкладку
@@ -264,7 +264,7 @@ export default function CodeEditor({
       setActiveTabs([...activeTabs, fileId]);
     }
     setCurrentTab(fileId);
-    
+
     // Обновление кода
     if (content !== undefined) {
       updateCode(content);
@@ -275,7 +275,7 @@ export default function CodeEditor({
       }
     }
   };
-  
+
   // Функция добавления нового файла
   const handleAddNewFile = (parentId: string) => {
     const fileName = prompt("Введите имя файла:", "newfile.js");
@@ -283,7 +283,7 @@ export default function CodeEditor({
       const fileId = `${parentId}/${fileName}`;
       const ext = getFileExtension(fileName);
       const language = getLanguageFromExtension(ext);
-      
+
       setFileTree(prev => {
         const updateNodes = (nodes: FileNode[]): FileNode[] => {
           return nodes.map(node => {
@@ -304,32 +304,32 @@ export default function CodeEditor({
                 ]
               };
             }
-            
+
             if (node.children && node.children.length > 0) {
               return {
                 ...node,
                 children: updateNodes(node.children)
               };
             }
-            
+
             return node;
           });
         };
-        
+
         return updateNodes(prev);
       });
-      
+
       // Открыть новый файл
       handleFileSelect(fileId, fileName, language, '');
     }
   };
-  
+
   // Функция добавления новой папки
   const handleAddNewFolder = (parentId: string) => {
     const folderName = prompt("Введите имя папки:", "new-folder");
     if (folderName) {
       const folderId = `${parentId}/${folderName}`;
-      
+
       setFileTree(prev => {
         const updateNodes = (nodes: FileNode[]): FileNode[] => {
           return nodes.map(node => {
@@ -350,23 +350,23 @@ export default function CodeEditor({
                 ]
               };
             }
-            
+
             if (node.children && node.children.length > 0) {
               return {
                 ...node,
                 children: updateNodes(node.children)
               };
             }
-            
+
             return node;
           });
         };
-        
+
         return updateNodes(prev);
       });
     }
   };
-  
+
   // Функция для удаления файла или папки
   const handleDeleteNode = (nodeId: string) => {
     if (confirm('Вы уверены, что хотите удалить этот элемент?')) {
@@ -377,26 +377,26 @@ export default function CodeEditor({
           setCurrentTab(activeTabs[0] === nodeId ? activeTabs[1] || '' : activeTabs[0] || '');
         }
       }
-      
+
       // Удаляем из дерева
       setFileTree(prev => {
         const removeNode = (nodes: FileNode[]): FileNode[] => {
           return nodes.filter(node => {
             if (node.id === nodeId) return false;
-            
+
             if (node.children && node.children.length > 0) {
               node.children = removeNode(node.children);
             }
-            
+
             return true;
           });
         };
-        
+
         return removeNode(prev);
       });
     }
   };
-  
+
   // Функция для переключения состояния раскрытия папки
   const toggleFolderExpand = (folderId: string) => {
     setFileTree(prev => {
@@ -408,34 +408,34 @@ export default function CodeEditor({
               isExpanded: !node.isExpanded
             };
           }
-          
+
           if (node.children && node.children.length > 0) {
             return {
               ...node,
               children: toggleExpand(node.children)
             };
           }
-          
+
           return node;
         });
       };
-      
+
       return toggleExpand(prev);
     });
   };
-  
+
   // Функция для закрытия вкладки
   const handleCloseTab = (tabId: string, event: React.MouseEvent) => {
     event.stopPropagation();
     const newTabs = activeTabs.filter(tab => tab !== tabId);
     setActiveTabs(newTabs);
-    
+
     if (currentTab === tabId) {
       // Переключаемся на другую вкладку если закрываем активную
       const currentIndex = activeTabs.indexOf(tabId);
       const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
       const nextTab = activeTabs[nextIndex] === tabId ? activeTabs[nextIndex + 1] : activeTabs[nextIndex];
-      
+
       if (nextTab) {
         setCurrentTab(nextTab);
         const file = findFile(fileTree, nextTab);
@@ -448,7 +448,7 @@ export default function CodeEditor({
       }
     }
   };
-  
+
   // Функция для отображения дерева файлов
   const renderFileTree = (nodes: FileNode[] = [], level = 0) => {
     return (
@@ -472,14 +472,14 @@ export default function CodeEditor({
                   )}
                 </button>
               )}
-              
+
               {node.type === 'file' ? (
                 <div className="flex-1 flex items-center gap-1 cursor-pointer pl-1" 
                   onClick={() => handleFileSelect(node.id, node.name, node.language || 'javascript', node.content)}
                 >
                   {getFileIcon(node.name)}
                   <span className="text-xs truncate">{node.name}</span>
-                  
+
                   <Button 
                     variant="ghost" 
                     size="icon"
@@ -498,7 +498,7 @@ export default function CodeEditor({
                 >
                   <Folder className="h-4 w-4 text-blue-300" />
                   <span className="text-xs font-medium">{node.name}</span>
-                  
+
                   <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100">
                     <Button 
                       variant="ghost" 
@@ -539,7 +539,7 @@ export default function CodeEditor({
                 </div>
               )}
             </div>
-            
+
             {node.type === 'folder' && node.isExpanded && node.children && (
               <div className="border-l border-border ml-2">
                 {renderFileTree(node.children, level + 1)}
@@ -550,26 +550,26 @@ export default function CodeEditor({
       </div>
     );
   };
-  
+
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
     // Load custom theme
     loadMonacoTheme(editor);
   };
-  
+
   const handleRunCode = async () => {
     try {
       // Сначала сохраняем текущие изменения в файле
       updateFileContent(currentTab, code);
-      
+
       // Собираем HTML для предпросмотра
       // Если текущий файл HTML, просто используем его
       // Иначе ищем index.html и вставляем остальные файлы
       const currentFile = findFile(fileTree, currentTab);
-      
+
       let html = "";
       let indexHtmlFile = null;
-      
+
       if (currentFile?.name.endsWith('.html')) {
         html = code;
       } else {
@@ -586,9 +586,9 @@ export default function CodeEditor({
           }
           return null;
         };
-        
+
         indexHtmlFile = findIndexHtml(fileTree);
-        
+
         if (indexHtmlFile && indexHtmlFile.content) {
           html = indexHtmlFile.content;
         } else {
@@ -613,14 +613,14 @@ export default function CodeEditor({
           `;
         }
       }
-      
+
       // Отправка кода для запуска
       const result = await runCode(html);
-      
+
       if (result.html && onPreviewUpdate) {
         onPreviewUpdate(result.html);
       }
-      
+
       toast({
         title: "Код запущен",
         description: "Ваш код выполняется в панели предпросмотра.",
@@ -633,18 +633,18 @@ export default function CodeEditor({
       });
     }
   };
-  
+
   const handleEditorChange = (value: string | undefined) => {
     const newValue = value || "";
     updateCode(newValue);
-    
+
     // Сохраняем изменения в текущем файле
     if (currentTab) {
       updateFileContent(currentTab, newValue);
-      
+
       // Отправляем изменения через WebSocket
       broadcastChanges(currentTab, newValue);
-      
+
       // Обновляем предпросмотр в реальном времени с небольшой задержкой
       // для предотвращения слишком частого обновления при быстром вводе
       if (previewUpdateTimeout.current) {
@@ -659,7 +659,7 @@ export default function CodeEditor({
       }, 1000); // 1 секунда задержки
     }
   };
-  
+
   const handleCopyCode = () => {
     if (code) {
       navigator.clipboard.writeText(code);
@@ -669,7 +669,7 @@ export default function CodeEditor({
       });
     }
   };
-  
+
   const handleAddDependency = async () => {
     if (!dependencyName) {
       toast({
@@ -679,45 +679,45 @@ export default function CodeEditor({
       });
       return;
     }
-    
+
     try {
       const response = await fetch("/api/install-dependency", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dependency: dependencyName, type: dependencyType })
       });
-      
+
       if (!response.ok) {
         throw new Error(`Ошибка: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast({
           title: "Установлено",
           description: `Зависимость ${dependencyName} успешно установлена`,
         });
-        
+
         // Обновляем package.json
         const packageFile = findFile(fileTree, 'package.json');
         if (packageFile && packageFile.content) {
           try {
             const packageJson = JSON.parse(packageFile.content);
             const section = dependencyType === 'dev' ? 'devDependencies' : 'dependencies';
-            
+
             if (!packageJson[section]) {
               packageJson[section] = {};
             }
-            
+
             packageJson[section][dependencyName] = "^latest";
-            
+
             updateFileContent('package.json', JSON.stringify(packageJson, null, 2));
           } catch (e) {
             console.error("Error updating package.json:", e);
           }
         }
-        
+
         // Закрыть диалог
         setShowDependencyDialog(false);
         setDependencyName('');
@@ -732,7 +732,7 @@ export default function CodeEditor({
       });
     }
   };
-  
+
   const handleExportToGitHub = async () => {
     if (!gitHubRepo) {
       toast({
@@ -742,12 +742,12 @@ export default function CodeEditor({
       });
       return;
     }
-    
+
     try {
       // Собираем все файлы из дерева в плоский список
       const collectFiles = (nodes: FileNode[]): {name: string, content: string}[] => {
         let files: {name: string, content: string}[] = [];
-        
+
         for (const node of nodes) {
           if (node.type === 'file' && node.content) {
             files.push({
@@ -755,17 +755,17 @@ export default function CodeEditor({
               content: node.content
             });
           }
-          
+
           if (node.children && node.children.length > 0) {
             files = [...files, ...collectFiles(node.children)];
           }
         }
-        
+
         return files;
       };
-      
+
       const files = collectFiles(fileTree);
-      
+
       // Отправляем на сервер
       const response = await fetch("/api/export-github", {
         method: "POST",
@@ -776,19 +776,19 @@ export default function CodeEditor({
           files
         })
       });
-      
+
       if (!response.ok) {
         throw new Error(`Ошибка: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast({
           title: "Экспорт выполнен",
           description: `Проект успешно экспортирован на GitHub: ${result.url}`,
         });
-        
+
         // Закрыть диалог
         setShowGitHubDialog(false);
         setGitHubRepo('');
@@ -803,22 +803,22 @@ export default function CodeEditor({
       });
     }
   };
-  
+
   // Определяем язык редактора по расширению файла
   const getEditorLanguage = () => {
     const currentFile = findFile(fileTree, currentTab);
     if (currentFile && currentFile.language) {
       return currentFile.language;
     }
-    
+
     if (currentTab) {
       const ext = getFileExtension(currentTab);
       return getLanguageFromExtension(ext);
     }
-    
+
     return 'javascript';
   };
-  
+
   return (
     <Card className="flex flex-col h-full shadow-[0_0_15px_rgba(59,130,246,0.3)] relative overflow-hidden border-blue-500/30 before:absolute before:inset-0 before:-z-10 before:bg-[linear-gradient(rgba(59,130,246,0.1),rgba(139,92,246,0.1),rgba(59,130,246,0.1))] before:opacity-30 before:animate-[spin_6s_linear_infinite]">
       <CardHeader className="border-b border-border/40 px-4 py-3 space-y-0 flex flex-row justify-between items-center">
@@ -892,14 +892,14 @@ export default function CodeEditor({
           </Button>
         </div>
       </CardHeader>
-      
+
       <div className="flex h-[calc(100%-64px)]">
         {/* Боковая панель с древовидной структурой */}
         <div className="w-64 border-r border-border/40 flex flex-col p-2 overflow-auto h-full">
           <div className="text-xs font-medium mb-2 text-muted-foreground">Файлы проекта</div>
           {renderFileTree(fileTree)}
         </div>
-        
+
         <div className="flex-1 flex flex-col">
           {/* Табы с файлами */}
           <div className="flex border-b border-border/40 overflow-x-auto">
@@ -934,7 +934,7 @@ export default function CodeEditor({
               ) : null;
             })}
           </div>
-          
+
           {/* Редактор кода */}
           <div className="flex-1 overflow-hidden">
             <Editor
@@ -958,7 +958,7 @@ export default function CodeEditor({
           </div>
         </div>
       </div>
-      
+
       {/* Диалог установки зависимостей */}
       {showDependencyDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -999,7 +999,7 @@ export default function CodeEditor({
           </div>
         </div>
       )}
-      
+
       {/* Диалог экспорта на GitHub */}
       {showGitHubDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

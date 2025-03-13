@@ -3,15 +3,15 @@ import { FileTab } from '@/components/CodeEditor';
 
 export function useCodeEditor() {
   const [files, setFiles] = useState<FileTab[]>([
-    { name: 'index.js', content: '' }
+    { id: "default", name: 'index.js', content: '' } //Added id field
   ]);
   const [activeFile, setActiveFile] = useState('index.js');
-  
+
   const getFileContent = useCallback((filename: string) => {
     const file = files.find(f => f.name === filename);
     return file ? file.content : '';
   }, [files]);
-  
+
   const updateCode = useCallback((newCode: string) => {
     setFiles(prev => 
       prev.map(file => 
@@ -21,7 +21,7 @@ export function useCodeEditor() {
       )
     );
   }, [activeFile]);
-  
+
   const addFile = useCallback((name: string, content: string = '') => {
     // Check if file already exists
     if (files.some(file => file.name === name)) {
@@ -31,7 +31,7 @@ export function useCodeEditor() {
       const extension = name.includes('.')
         ? name.substring(name.lastIndexOf('.'))
         : '';
-      
+
       // Find a unique name
       let counter = 1;
       let newName = `${baseName} (${counter})${extension}`;
@@ -39,20 +39,20 @@ export function useCodeEditor() {
         counter++;
         newName = `${baseName} (${counter})${extension}`;
       }
-      
+
       name = newName;
     }
-    
-    setFiles(prev => [...prev, { name, content }]);
+
+    setFiles(prev => [...prev, { id: crypto.randomUUID(), name, content }]); //Added id field
     return name;
   }, [files]);
-  
+
   const deleteFile = useCallback((name: string) => {
     // Don't delete the last file
     if (files.length <= 1) return;
-    
+
     setFiles(prev => prev.filter(file => file.name !== name));
-    
+
     // If we're deleting the active file, switch to the first available
     if (activeFile === name) {
       const remainingFiles = files.filter(file => file.name !== name);
@@ -61,7 +61,7 @@ export function useCodeEditor() {
       }
     }
   }, [files, activeFile]);
-  
+
   return {
     files,
     activeFile,
