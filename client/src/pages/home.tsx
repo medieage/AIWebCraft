@@ -36,7 +36,7 @@ export default function Home() {
               </svg>
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
-              AI Website Generator
+              ИИ Генератор Сайтов
             </span>
           </div>
           

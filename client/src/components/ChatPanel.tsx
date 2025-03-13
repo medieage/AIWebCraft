@@ -69,7 +69,7 @@ export default function ChatPanel({
       <CardHeader className="border-b border-border/40 px-4 py-3 space-y-0 flex flex-row justify-between items-center">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-purple-500" />
-          <CardTitle className="text-base font-medium">AI Chat</CardTitle>
+          <CardTitle className="text-base font-medium">ИИ Чат</CardTitle>
         </div>
         <div className="flex items-center gap-2">
           <ModelSelector 
@@ -86,7 +86,7 @@ export default function ChatPanel({
       <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-muted-foreground">
-            <p>Start a conversation with {provider.name}</p>
+            <p>Начните разговор с {provider.name}</p>
           </div>
         ) : (
           messages.map((message) => (
@@ -125,7 +125,7 @@ export default function ChatPanel({
         <form onSubmit={handleSubmit} className="w-full">
           <div className="relative">
             <Input
-              placeholder={`Ask me to build something with Next.js & React...`}
+              placeholder={`Попросите меня создать что-нибудь с помощью Next.js и React...`}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               disabled={isLoading}
@@ -157,7 +157,7 @@ export default function ChatPanel({
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
-              {!provider.hasKey ? "API Key required to use AI features" : "Messages may be logged for service improvements"}
+              {!provider.hasKey ? "Требуется API ключ для использования ИИ функций" : "Сообщения могут быть записаны для улучшения сервиса"}
             </div>
           </div>
         </form>

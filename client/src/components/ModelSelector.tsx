@@ -27,7 +27,7 @@ export default function ModelSelector({
           className="h-auto py-0.5 px-1 text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground"
         >
           <span className="truncate max-w-[150px]">
-            {selected?.name || "Select model"}
+            {selected?.name || "Выберите модель"}
           </span>
           <ChevronDown className="h-3 w-3 opacity-50" />
         </Button>
@@ -35,7 +35,7 @@ export default function ModelSelector({
       <PopoverContent className="p-0 w-56" align="end">
         <Command>
           <CommandList>
-            <CommandEmpty>No models found.</CommandEmpty>
+            <CommandEmpty>Модели не найдены.</CommandEmpty>
             <CommandGroup>
               {models.map((model) => (
                 <CommandItem
