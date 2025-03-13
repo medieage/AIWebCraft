@@ -27,7 +27,7 @@ export function ChatPanel({ onCodeUpdate, providerConfig, setProviderConfig }: C
     {
       id: "system-1",
       role: "system",
-      content: "I'm your AI assistant for building Next.js and React websites. Tell me what kind of website you'd like to create!",
+      content: "Я ваш ИИ-ассистент по созданию веб-сайтов на Next.js и React. Расскажите, какой сайт вы хотите создать!",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -60,8 +60,8 @@ export function ChatPanel({ onCodeUpdate, providerConfig, setProviderConfig }: C
         setIsTyping(false);
         setSettingsOpen(true);
         toast({
-          title: "API Key Required",
-          description: "Please set your AI provider API key to continue.",
+          title: "Требуется API Ключ",
+          description: "Пожалуйста, установите ключ API для продолжения работы.",
           variant: "destructive",
         });
         return;

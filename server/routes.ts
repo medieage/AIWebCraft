@@ -1,7 +1,7 @@
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertApiKeySchema } from "@shared/schema";
+import { insertApiKeySchema, DEFAULT_SYSTEM_PROMPT, MESSAGE_ROLE } from "@shared/schema";
 import { z } from "zod";
 import axios from "axios";
 
@@ -85,13 +85,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Call Gemini API
       try {
+        // Create message array with system prompt and user message
+        const contents = [
+          { 
+            role: MESSAGE_ROLE.SYSTEM, 
+            parts: [{ text: DEFAULT_SYSTEM_PROMPT }] 
+          },
+          { 
+            role: MESSAGE_ROLE.USER,
+            parts: [{ text: prompt }] 
+          }
+        ];
+        
+        console.log("Sending request to Gemini with system prompt included");
+        
         const response = await axios.post(
           `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
           {
-            contents: [{ 
-              role: "user",
-              parts: [{ text: prompt }] 
-            }],
+            contents,
             generationConfig: {
               temperature: 0.7,
               topK: 40,

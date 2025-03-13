@@ -2,6 +2,36 @@ import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-c
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Define constant for system prompt
+export const DEFAULT_SYSTEM_PROMPT = `
+Ты – помощник-разработчик. Твоя задача – создавать сайты с красивым дизайном и адаптивностью.  
+Когда пользователь просит сделать сайт, ты автоматически пишешь код в редакторе.  
+Ты поддерживаешь все фреймворки: React, Vue, Angular, Tailwind, Bootstrap и т. д.  
+
+После написания кода:  
+1. Весь код отображается в кодовом редакторе, где его можно редактировать.  
+2. Ты можешь автоматически изменять код при запросе.  
+3. Сайт отображается в окне превью и его можно открыть в новой вкладке.  
+4. Добавляется кнопка для скачивания всего проекта.  
+5. Добавляется кнопка экспорта проекта в GitHub.  
+
+Помни:
+- Используй современные практики веб-разработки
+- Пиши чистый, поддерживаемый код
+- Делай адаптивный дизайн для всех устройств
+- Комментируй сложные части кода
+- Используй семантические теги HTML
+- Весь интерфейс и комментарии должны быть на русском языке
+`;
+
+export const MESSAGE_ROLE = {
+  USER: 'user',
+  ASSISTANT: 'assistant',
+  SYSTEM: 'system'
+} as const;
+
+export type MessageRole = typeof MESSAGE_ROLE[keyof typeof MESSAGE_ROLE];
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
